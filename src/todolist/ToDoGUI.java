@@ -6,6 +6,7 @@
 package todolist;
 
 import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -39,8 +40,6 @@ public class ToDoGUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextField1.setText("Description");
-
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Very Low", "Low", "Medium", "High", "Very High" }));
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -55,7 +54,6 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
         });
 
-        jTextField2.setText("01/01/2015");
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField2ActionPerformed(evt);
@@ -101,9 +99,13 @@ public class ToDoGUI extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.setAutoCreateRowSorter(true);
         jScrollPane2.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(0).setMinWidth(100);
+            jTable1.getColumnModel().getColumn(0).setPreferredWidth(300);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
         }
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -114,15 +116,15 @@ public class ToDoGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(53, 53, 53)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jButton1))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -259,7 +261,8 @@ public class ToDoGUI extends javax.swing.JFrame {
         else jTextField2.setText(parseDate(jTextField2.getText()));
 
     }//GEN-LAST:event_jTextField2KeyReleased
-    private ArrayList<ToDo> todoList = new ArrayList<ToDo>();
+    //private ArrayList<ToDo> todoList = new ArrayList<ToDo>();
+   
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         //when button is pressed, add the new item.
@@ -275,13 +278,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             System.out.println(Date);
             System.out.println(Year);
             ToDo todo = new ToDo(desc,priorityStr,dateStr);
-            todoList.add(todo);
-            String s = "";
-            for (ToDo x: todoList){
-                s += x.toString();
-                s += "\n";
-            }
-            //jTextArea1.setText(s);
+
             DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(),todo.getDateStr(),todo.getPriorityStr()});
 //            for (ToDo x: todoList){
@@ -321,7 +318,9 @@ public class ToDoGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-
+                Date d = new Date();
+                String s = d.getMonth()+"/"+d.getDate()+"/"+d.getYear();
+                
                 new ToDoGUI().setVisible(true);
 
             }
