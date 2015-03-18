@@ -5,9 +5,15 @@
  */
 package todolist;
 
+import java.awt.Component;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 /**
  *
@@ -21,6 +27,23 @@ public class ToDoGUI extends javax.swing.JFrame {
     public ToDoGUI() {
         initComponents();
     }
+    
+    //Renderer for the date column
+ 
+    TableCellRenderer dateRenderer = new DefaultTableCellRenderer() {
+
+        SimpleDateFormat f = new SimpleDateFormat("MM/DD/yyyy");
+
+        public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus,
+                int row, int column) {
+            if (value instanceof Date) {
+                value = f.format(((Date)value).getTime());
+            }
+            return super.getTableCellRendererComponent(table, value, isSelected,
+                    hasFocus, row, column);
+        }
+    };
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -85,10 +108,10 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Object.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -101,12 +124,20 @@ public class ToDoGUI extends javax.swing.JFrame {
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
         jTable1.setAutoCreateRowSorter(true);
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTable1KeyReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMinWidth(100);
+            jTable1.getColumnModel().getColumn(0).setMinWidth(200);
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(300);
+            jTable1.getColumnModel().getColumn(1).setCellRenderer(null);
             jTable1.getColumnModel().getColumn(2).setResizable(false);
         }
+        //set the date column to display mm/dd/yyyy
+        jTable1.getColumnModel().getColumn(1).setCellRenderer(dateRenderer);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -153,8 +184,7 @@ public class ToDoGUI extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jTextField2ActionPerformed
 
-            
-            
+
     private void jTextField2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyTyped
         // TODO add your handling code here:
 
@@ -170,33 +200,37 @@ public class ToDoGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
 
     }//GEN-LAST:event_jTextField2PropertyChange
-    
+
     /**
      * Returns true if the character is a digit (0-9)
+     *
      * @param b the Character
-     * @return 
+     * @return
      */
     private boolean isDigit(char b) {
         return (b == '0' || b == '1' || b == '2' || b == '3' || b == '4'
                 || b == '5' || b == '6' || b == '7' || b == '8' || b == '9');
     }
+
     /**
-     * Parses the date is mmddyyyy format. Takes in a String and returns the date by removing any other characters and adding slashes
+     * Parses the date is mmddyyyy format. Takes in a String and returns the
+     * date by removing any other characters and adding slashes
+     *
      * @param s String representation of the date
      * @param kbdCode the key being pressed
-     * @return 
+     * @return
      */
-    private String parseDate(String s){
+    private String parseDate(String s) {
         char[] strChar = s.toCharArray();
         //get rid of all non-digits
         s = "";
         //allow user to not enter leading 0 of month
-        if(strChar.length==2 && strChar[1]=='/') {
+        if (strChar.length == 2 && strChar[1] == '/') {
             strChar[1] = strChar[0];
-            strChar[0] = '0';       
+            strChar[0] = '0';
         }
         //allow user to not have to enter leading 0 of day
-        if(strChar.length==5 && strChar[4]=='/') {
+        if (strChar.length == 5 && strChar[4] == '/') {
             strChar[4] = strChar[3];
             strChar[3] = '0';
         }
@@ -207,86 +241,112 @@ public class ToDoGUI extends javax.swing.JFrame {
         }
         strChar = s.toCharArray();
         //don't do anything if the user is backspacing or moving the arrow keys
-        
-        
-            if (s.length() >= 2) {
-                //if the month is greater than 12, get rid of it
-                if(Integer.parseInt(s.substring(0,2))>12) {        
-                    return "";                    
-                }
-                s = s.substring(0, 2) + "/" + s.substring(2);
+
+        if (s.length() >= 2) {
+            //if the month is greater than 12, get rid of it
+            if (Integer.parseInt(s.substring(0, 2)) > 12) {
+                return "";
             }
-            if (s.length()>=5) {
-                //check to make sure the date matches up with the month
-                int Month = Integer.parseInt(s.substring(0,2));
-                int Date = Integer.parseInt(s.substring(3,5));
-                //30 days has September, April, June, and November
-                if (Month == 9 || Month == 4 || Month == 6 || Month == 11) {
-                    if (Date>30) return Month+"/";
-                }
-                //February is tricky, because of leap years. Once the year is added, we will check
-                //if it is a leap year, and if it is, change the 29 to 28
-                if (Month == 2){
-                    if (Date>29) return Month+"/";
-                }
-                else {
-                    if (Date>31) return Month+"/";
-                }
-                s = s.substring(0,5) + "/" + s.substring(5);
-            
-            }
-            if (s.length()>=10){
-                s = s.substring(0,10);
-                int Month = Integer.parseInt(s.substring(0,2));
-                int Date = Integer.parseInt(s.substring(3,5));
-                int Year = Integer.parseInt(s.substring(6,10));
-                if(Month==2 && Date==29){
-                    //if the year is divisable by 0, and either the year is not divisible by 100 or IS disible by 400, it is a leap year
-                    if (!(Year%4==0 && (Year%100!=0 || Year%400==0))){
-                        //if it is not a leap year, then Date must be changed to 28
-                        return "0"+Month+"/"+"28"+"/"+Year;
-                    }
+            s = s.substring(0, 2) + "/" + s.substring(2);
+        }
+        if (s.length() >= 5) {
+            //check to make sure the date matches up with the month
+            int Month = Integer.parseInt(s.substring(0, 2));
+            int Date = Integer.parseInt(s.substring(3, 5));
+            //30 days has September, April, June, and November
+            if (Month == 9 || Month == 4 || Month == 6 || Month == 11) {
+                if (Date > 30) {
+                    return Month + "/";
                 }
             }
+            //February is tricky, because of leap years. Once the year is added, we will check
+            //if it is a leap year, and if it is, change the 29 to 28
+            if (Month == 2) {
+                if (Date > 29) {
+                    return Month + "/";
+                }
+            } else {
+                if (Date > 31) {
+                    return Month + "/";
+                }
+            }
+            s = s.substring(0, 5) + "/" + s.substring(5);
+
+        }
+        if (s.length() >= 10) {
+            s = s.substring(0, 10);
+            int Month = Integer.parseInt(s.substring(0, 2));
+            int Date = Integer.parseInt(s.substring(3, 5));
+            int Year = Integer.parseInt(s.substring(6, 10));
+            if (Month == 2 && Date == 29) {
+                //if the year is divisable by 0, and either the year is not divisible by 100 or IS disible by 400, it is a leap year
+                if (!(Year % 4 == 0 && (Year % 100 != 0 || Year % 400 == 0))) {
+                    //if it is not a leap year, then Date must be changed to 28
+                    return "0" + Month + "/" + "28" + "/" + Year;
+                }
+            }
+        }
         return s;
-        
-        
+
     }
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
         // TODO add your handling code here:
         //For the formatted text box, do something everytime a key is pressed
         //to keep it formated as a date
         int kbdCode = evt.getKeyCode();
-        if (kbdCode == 8 || kbdCode == 37 || kbdCode == 38 || kbdCode == 39 || kbdCode == 40) {}
-        else jTextField2.setText(parseDate(jTextField2.getText()));
+        if (kbdCode == 8 || kbdCode == 37 || kbdCode == 38 || kbdCode == 39 || kbdCode == 40) {
+        } else {
+            jTextField2.setText(parseDate(jTextField2.getText()));
+        }
 
     }//GEN-LAST:event_jTextField2KeyReleased
     //private ArrayList<ToDo> todoList = new ArrayList<ToDo>();
-   
+
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        //when button is pressed, add the new item.
+        //when 'GO' button is pressed, add the new item.
         String desc = jTextField1.getText();
         String dateStr = jTextField2.getText();
-        String priorityStr = (String)jComboBox1.getSelectedItem();
+        String priorityStr = (String) jComboBox1.getSelectedItem();
         //only go if the date has been fully entered
-        if(dateStr.length() == 10) {
-            int Month = Integer.parseInt(dateStr.substring(0,2));
-            int Date = Integer.parseInt(dateStr.substring(3,5));
-            int Year = Integer.parseInt(dateStr.substring(6,10));
-            System.out.println(Month);
-            System.out.println(Date);
-            System.out.println(Year);
-            ToDo todo = new ToDo(desc,priorityStr,dateStr);
+        if (dateStr.length() == 10) {
+            int Month = Integer.parseInt(dateStr.substring(0, 2));
+            int Date = Integer.parseInt(dateStr.substring(3, 5));
+            int Year = Integer.parseInt(dateStr.substring(6, 10));
 
-            DefaultTableModel model = (DefaultTableModel)jTable1.getModel();
-            model.addRow(new Object[]{todo.getDesc(),todo.getDateStr(),todo.getPriorityStr()});
+            ToDo todo = new ToDo(desc, priorityStr, dateStr);
+
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
 //            for (ToDo x: todoList){
 //                model.addRow(new Object[]{x.getDesc(), x.getDateStr(), x.getPriorityStr()});
 //            }
-            
+
         }
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTable1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyReleased
+
+        //Delete the selected Row when 'delete' is pressed
+        if (evt.getKeyCode() == 65 || evt.getKeyCode() == 127) {
+            int rowSelected;
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            rowSelected = jTable1.getSelectedRow();
+            if (rowSelected == -1) {
+                //if no Row is selected, then check if there is a row being edited
+                rowSelected = jTable1.getEditingRow();
+            }
+            //If a row was found to delete, delete it.
+            if (rowSelected != -1) {
+                /**
+                 * @debug
+                 */
+                System.out.println("Deleting row: " + rowSelected);
+
+                model.removeRow(rowSelected);
+            }
+        }
+    }//GEN-LAST:event_jTable1KeyReleased
 
     /**
      * @param args the command line arguments
@@ -319,13 +379,16 @@ public class ToDoGUI extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 Date d = new Date();
-                String s = d.getMonth()+"/"+d.getDate()+"/"+d.getYear();
-                
+                String s = d.getMonth() + "/" + d.getDate() + "/" + d.getYear();
+
                 new ToDoGUI().setVisible(true);
 
             }
         });
     }
+
+    //Renderer for the Date column
+    //The collumn stores data of the Data class. We want to display that data as mm/dd/YYYY
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

@@ -7,6 +7,7 @@ package todolist;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Date;
+import java.util.GregorianCalendar;
 enum Priority {
     Very_Low, Low, Medium, High, Very_High
 }
@@ -18,10 +19,12 @@ public class ToDo {
 private Priority priority;
 private String description;
 private Date date = new Date();
+private Calendar cal = new GregorianCalendar();
 
-    public ToDo(String desc, Priority p, Calendar d){
+    public ToDo(String desc, Priority p, Date d){
         description = desc;
         priority = p;
+        date = d;
        
     }
     /**
@@ -39,15 +42,21 @@ private Date date = new Date();
         else if(p.equals("High")) priority = Priority.High;
         else priority = Priority.Very_High;
         
-        int Month = Integer.parseInt(d.substring(0,2));
-        int Day = Integer.parseInt(d.substring(3,5));
+        int Month = Integer.parseInt(d.substring(0,2)) - 1; //Java starts months at 0... 
+        int Day = Integer.parseInt(d.substring(3,5)) ;  
         int Year = Integer.parseInt(d.substring(6,10));
-        System.out.println(p);
-        System.out.println(priority);
-        date.setDate(Day);
-        date.setMonth(Month);
-        date.setYear(Year);
-        
+        System.out.println(Month);
+        System.out.println(Day);
+        System.out.println(Year);
+        //System.out.println(p);
+        //System.out.println(priority);
+        cal.set(Year, Month, Day);
+        date = cal.getTime();
+        //date.setMonth(Month);
+        //date.setYear(Year);
+        System.out.println(date.getMonth());
+        System.out.println(date.getDate());
+        System.out.println(date.getYear());
         
         
         
