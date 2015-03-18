@@ -14,6 +14,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -32,13 +36,13 @@ public class ToDoGUI extends javax.swing.JFrame {
  
     TableCellRenderer dateRenderer = new DefaultTableCellRenderer() {
 
-        SimpleDateFormat f = new SimpleDateFormat("MM/DD/yyyy");
+        SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy");
 
         public Component getTableCellRendererComponent(JTable table,
                 Object value, boolean isSelected, boolean hasFocus,
                 int row, int column) {
-            if (value instanceof Date) {
-                value = f.format(((Date)value).getTime());
+            if (value instanceof Calendar) {
+                value = f.format(((Calendar)value).getTime());
             }
             return super.getTableCellRendererComponent(table, value, isSelected,
                     hasFocus, row, column);
@@ -133,7 +137,6 @@ public class ToDoGUI extends javax.swing.JFrame {
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setMinWidth(200);
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(300);
-            jTable1.getColumnModel().getColumn(1).setCellRenderer(null);
             jTable1.getColumnModel().getColumn(2).setResizable(false);
         }
         //set the date column to display mm/dd/yyyy
@@ -170,6 +173,14 @@ public class ToDoGUI extends javax.swing.JFrame {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        //set the default date to the current System date.
+        String dateStr;
+        SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar cal = new GregorianCalendar();
+
+        dateStr = f.format(cal.getTime());
+        jTextField2.setText(dateStr);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -347,10 +358,11 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jTable1KeyReleased
-
+    
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -374,13 +386,13 @@ public class ToDoGUI extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ToDoGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 Date d = new Date();
                 String s = d.getMonth() + "/" + d.getDate() + "/" + d.getYear();
-
+             
                 new ToDoGUI().setVisible(true);
 
             }

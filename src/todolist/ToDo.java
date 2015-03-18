@@ -65,8 +65,8 @@ private Calendar cal = new GregorianCalendar();
      * 
      * @return the date of the item
      */
-    public Date getDate(){
-        return date;
+    public Calendar getDate(){
+        return cal;
     }
     public String getDateStr(){
         return date.getMonth() + "/"+date.getDate() +"/"+date.getYear();
