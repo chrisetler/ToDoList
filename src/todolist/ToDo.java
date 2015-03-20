@@ -86,6 +86,7 @@ private Calendar cal = new GregorianCalendar();
     public Priority getPriority(){
         return priority; 
     }
+    
     public String getPriorityStr(){
         
         if (priority.equals(Priority.Very_Low)) return "Very Low";
