@@ -6,7 +6,6 @@
 package todolist;
 
 import java.awt.Component;
-import java.awt.PopupMenu;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import javax.swing.JTable;
@@ -16,8 +15,6 @@ import javax.swing.table.TableCellRenderer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
-import javax.swing.JPopupMenu;
 
 /**
  *
@@ -30,7 +27,7 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     public ToDoGUI() {
         initComponents();
-        System.out.print("init");
+        
         //jPopupMenu1 = new JPopupMenu();
         //jPopupMenu1.add("Edit");
     }
@@ -91,6 +88,11 @@ public class ToDoGUI extends javax.swing.JFrame {
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBox1ActionPerformed(evt);
+            }
+        });
+        jComboBox1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jComboBox1FocusLost(evt);
             }
         });
 
@@ -267,11 +269,11 @@ public class ToDoGUI extends javax.swing.JFrame {
     }
 
     /**
-     * Parses the date is mmddyyyy format. Takes in a String and returns the
+     * Parses the date is MM/dd/yyyy format. Takes in a String and returns the
      * date by removing any other characters and adding slashes
      *
      * @param s String representation of the date
-     * @param kbdCode the key being pressed
+     * 
      * @return
      */
     private String parseDate(String s) {
@@ -288,14 +290,14 @@ public class ToDoGUI extends javax.swing.JFrame {
             strChar[4] = strChar[3];
             strChar[3] = '0';
         }
+        
         for (char x : strChar) {
             if (isDigit(x)) {
                 s += x;
             }
         }
-        strChar = s.toCharArray();
-        //don't do anything if the user is backspacing or moving the arrow keys
-
+        
+        //perform this when the first two digits (Month) are entered
         if (s.length() >= 2) {
             //if the month is greater than 12, get rid of it
             if (Integer.parseInt(s.substring(0, 2)) > 12) {
@@ -303,6 +305,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
             s = s.substring(0, 2) + "/" + s.substring(2);
         }
+        //perform this when the next two digits(Day) are entered
         if (s.length() >= 5) {
             //check to make sure the date matches up with the month
             int Month = Integer.parseInt(s.substring(0, 2));
@@ -315,6 +318,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
             //February is tricky, because of leap years. Once the year is added, we will check
             //if it is a leap year, and if it is, change the 29 to 28
+            //the check for proper Feb date will occur when the year is entered
             if (Month == 2) {
                 if (Date > 29) {
                     return Month + "/";
@@ -327,6 +331,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             s = s.substring(0, 5) + "/" + s.substring(5);
 
         }
+        //perform this when MM dd and yyyy are entered
         if (s.length() >= 10) {
             s = s.substring(0, 10);
             int Month = Integer.parseInt(s.substring(0, 2));
@@ -425,7 +430,9 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     private void jTextField2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField2FocusLost
         if (jTextField2.getText().length() == 8) {
-            String s = jTextField2.getText().substring(0, 6) + "20" + jTextField2.getText().substring(6, 8);
+            Calendar cal = new GregorianCalendar();
+            int txt = cal.get(Calendar.YEAR)/100;
+            String s = jTextField2.getText().substring(0, 6) + txt + jTextField2.getText().substring(6, 8);
             jTextField2.setText(s);
         }
     }//GEN-LAST:event_jTextField2FocusLost
@@ -440,6 +447,10 @@ public class ToDoGUI extends javax.swing.JFrame {
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             System.out.println(2);
             //do the same thing as if the button is clicked
+            //but also set the focus back to the first text box and select all
+            //for easy input of a lot of data
+            jTextField1.requestFocus();
+            jTextField1.selectAll();
             this.jButton1ActionPerformed(null);
         }
     }//GEN-LAST:event_jButton1KeyReleased
@@ -482,6 +493,10 @@ public class ToDoGUI extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jComboBox1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jComboBox1FocusLost
+        
+    }//GEN-LAST:event_jComboBox1FocusLost
     /**
      * Proper use of the ToDo API requires very low priority to be set to 0,
      * very high to 4, and everything else logically in between.
