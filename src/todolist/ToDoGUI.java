@@ -7,6 +7,8 @@ package todolist;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -15,6 +17,8 @@ import javax.swing.table.TableCellRenderer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,10 +28,13 @@ public class ToDoGUI extends javax.swing.JFrame {
 
     /**
      * Creates new form ToDoGUI
+     * @throws java.io.IOException
+     * @throws java.io.FileNotFoundException
+     * @throws java.lang.ClassNotFoundException
      */
-    public ToDoGUI() {
+    public ToDoGUI() throws IOException, FileNotFoundException, ClassNotFoundException {
         initComponents();
-        
+        importFile("temp");
         //jPopupMenu1 = new JPopupMenu();
         //jPopupMenu1.add("Edit");
     }
@@ -42,6 +49,7 @@ public class ToDoGUI extends javax.swing.JFrame {
                 int row, int column) {
             if (value instanceof Calendar) {
                 value = f.format(((Calendar) value).getTime());
+                
             }
             return super.getTableCellRendererComponent(table, value, isSelected,
                     hasFocus, row, column);
@@ -228,6 +236,25 @@ public class ToDoGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Use the ToDoIO class to import the file of a given file name and add it to the table
+     * @param fname
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException 
+     */
+    private void importFile(String fname) throws IOException, FileNotFoundException, ClassNotFoundException{
+        ToDoIO IO = new ToDoIO(3);
+        IO.importFile(fname);
+        
+        for(int i=0; i<IO.getRowCount(); i++){
+            Object[] objArray = IO.getRow(i);
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{(String)objArray[0], (Calendar)objArray[1], (String)objArray[2]});
+        }
+        
+    }
+    
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
 
@@ -361,7 +388,11 @@ public class ToDoGUI extends javax.swing.JFrame {
         //For the formatted text box, do something everytime a key is pressed
         //to keep it formated as a date
         int kbdCode = evt.getKeyCode();
-        if (kbdCode == 8 || kbdCode == 37 || kbdCode == 38 || kbdCode == 39 || kbdCode == 40) {
+        System.out.println(evt.getKeyCode());
+        if (kbdCode == KeyEvent.VK_BACK_SPACE || kbdCode == KeyEvent.VK_RIGHT || 
+            kbdCode == KeyEvent.VK_LEFT       || kbdCode == KeyEvent.VK_UP || 
+            kbdCode == KeyEvent.VK_DOWN) { //do nothing
+        
         } else {
             jTextField2.setText(parseDate(jTextField2.getText()));
         }
@@ -391,6 +422,26 @@ public class ToDoGUI extends javax.swing.JFrame {
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
+            
+            
+            //export the table to a temp file. 
+            ToDoIO io = new ToDoIO(3);
+            //go through the table getting values
+            int m = jTable1.getRowCount();
+            int n = jTable1.getColumnCount();
+            for (int i=0; i<m; i++){
+                Object[] objArray = new Object[n];
+                for (int j=0; j<n; j++){
+                    objArray[j] = jTable1.getValueAt(i, j);
+                }
+                //add one row of Objects at a time
+                io.add(objArray);
+            }
+            try {
+                io.export("temp");
+            } catch (IOException ex) {
+                Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
     /**
@@ -402,7 +453,7 @@ public class ToDoGUI extends javax.swing.JFrame {
     private void jTable1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyReleased
 
         //Delete the selected Row when 'delete' is pressed
-        if (evt.getKeyCode() == 65 || evt.getKeyCode() == 127) {
+        if (evt.getKeyCode() == KeyEvent.VK_DELETE) {
             int rowSelected;
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             rowSelected = jTable1.getSelectedRow();
@@ -552,7 +603,13 @@ public class ToDoGUI extends javax.swing.JFrame {
                 Date d = new Date();
                 String s = d.getMonth() + "/" + d.getDate() + "/" + d.getYear();
 
-                new ToDoGUI().setVisible(true);
+                try {
+                    new ToDoGUI().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
             }
         });
