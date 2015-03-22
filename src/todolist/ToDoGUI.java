@@ -28,6 +28,7 @@ public class ToDoGUI extends javax.swing.JFrame {
 
     /**
      * Creates new form ToDoGUI
+     *
      * @throws java.io.IOException
      * @throws java.io.FileNotFoundException
      * @throws java.lang.ClassNotFoundException
@@ -49,7 +50,9 @@ public class ToDoGUI extends javax.swing.JFrame {
                 int row, int column) {
             if (value instanceof Calendar) {
                 value = f.format(((Calendar) value).getTime());
-                
+                //allow the display of TBD when the date is not decided
+                if(((String)value).equals("04/25/9999")) value=(Object)"TBD";
+
             }
             return super.getTableCellRendererComponent(table, value, isSelected,
                     hasFocus, row, column);
@@ -177,6 +180,11 @@ public class ToDoGUI extends javax.swing.JFrame {
                 jTable1MouseReleased(evt);
             }
         });
+        jTable1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jTable1FocusLost(evt);
+            }
+        });
         jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTable1KeyReleased(evt);
@@ -237,24 +245,26 @@ public class ToDoGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Use the ToDoIO class to import the file of a given file name and add it to the table
+     * Use the ToDoIO class to import the file of a given file name and add it
+     * to the table
+     *
      * @param fname
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
-    private void importFile(String fname) throws IOException, FileNotFoundException, ClassNotFoundException{
+    private void importFile(String fname) throws IOException, FileNotFoundException, ClassNotFoundException {
         ToDoIO IO = new ToDoIO(3);
         IO.importFile(fname);
-        
-        for(int i=0; i<IO.getRowCount(); i++){
+
+        for (int i = 0; i < IO.getRowCount(); i++) {
             Object[] objArray = IO.getRow(i);
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-            model.addRow(new Object[]{(String)objArray[0], (Calendar)objArray[1], (String)objArray[2]});
+            model.addRow(new Object[]{(String) objArray[0], (Calendar) objArray[1], (String) objArray[2]});
         }
-        
+
     }
-    
+
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
 
@@ -300,10 +310,11 @@ public class ToDoGUI extends javax.swing.JFrame {
      * date by removing any other characters and adding slashes
      *
      * @param s String representation of the date
-     * 
+     *
      * @return
      */
     private String parseDate(String s) {
+        
         char[] strChar = s.toCharArray();
         //get rid of all non-digits
         s = "";
@@ -317,13 +328,13 @@ public class ToDoGUI extends javax.swing.JFrame {
             strChar[4] = strChar[3];
             strChar[3] = '0';
         }
-        
+
         for (char x : strChar) {
             if (isDigit(x)) {
                 s += x;
             }
         }
-        
+
         //perform this when the first two digits (Month) are entered
         if (s.length() >= 2) {
             //if the month is greater than 12, get rid of it
@@ -389,10 +400,10 @@ public class ToDoGUI extends javax.swing.JFrame {
         //to keep it formated as a date
         int kbdCode = evt.getKeyCode();
         System.out.println(evt.getKeyCode());
-        if (kbdCode == KeyEvent.VK_BACK_SPACE || kbdCode == KeyEvent.VK_RIGHT || 
-            kbdCode == KeyEvent.VK_LEFT       || kbdCode == KeyEvent.VK_UP || 
-            kbdCode == KeyEvent.VK_DOWN) { //do nothing
-        
+        if (kbdCode == KeyEvent.VK_BACK_SPACE || kbdCode == KeyEvent.VK_RIGHT
+                || kbdCode == KeyEvent.VK_LEFT || kbdCode == KeyEvent.VK_UP
+                || kbdCode == KeyEvent.VK_DOWN) { //do nothing
+
         } else {
             jTextField2.setText(parseDate(jTextField2.getText()));
         }
@@ -422,28 +433,40 @@ public class ToDoGUI extends javax.swing.JFrame {
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
-            
-            
-            //export the table to a temp file. 
-            ToDoIO io = new ToDoIO(3);
-            //go through the table getting values
-            int m = jTable1.getRowCount();
-            int n = jTable1.getColumnCount();
-            for (int i=0; i<m; i++){
-                Object[] objArray = new Object[n];
-                for (int j=0; j<n; j++){
-                    objArray[j] = jTable1.getValueAt(i, j);
-                }
-                //add one row of Objects at a time
-                io.add(objArray);
-            }
-            try {
-                io.export("temp");
-            } catch (IOException ex) {
-                Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
+        //if no Date is entered, set it to the value for TBD
+        if (dateStr.length() == 0){
+            //ToDo class parses the strings entered by the GUI for date and priority
+            ToDo todo = new ToDo(desc, priorityStr, "04/25/9999");
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
+        }
+        //reset the description field
+        jTextField1.setText("");
+        //Save to the temp file
+        saveFile("temp");
     }//GEN-LAST:event_jButton1ActionPerformed
+    private void saveFile(String fname) {
+        //export the table 
+        ToDoIO io = new ToDoIO(3);
+        //go through the table getting values
+        int m = jTable1.getRowCount();
+        int n = jTable1.getColumnCount();
+        for (int i = 0; i < m; i++) {
+            Object[] objArray = new Object[n];
+            for (int j = 0; j < n; j++) {
+                objArray[j] = jTable1.getValueAt(i, j);
+            }
+            //add one row of Objects at a time
+            io.add(objArray);
+        }
+        try {
+            io.export(fname);
+        } catch (IOException ex) {
+            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * Runs when a key is pressed over the table. Delete the selected Row if the
      * 'delete' key is pressed.
@@ -470,6 +493,8 @@ public class ToDoGUI extends javax.swing.JFrame {
 
                 model.removeRow(rowSelected);
             }
+            //Save to the temp file
+            saveFile("temp");
         }
     }//GEN-LAST:event_jTable1KeyReleased
 
@@ -482,7 +507,7 @@ public class ToDoGUI extends javax.swing.JFrame {
     private void jTextField2FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField2FocusLost
         if (jTextField2.getText().length() == 8) {
             Calendar cal = new GregorianCalendar();
-            int txt = cal.get(Calendar.YEAR)/100;
+            int txt = cal.get(Calendar.YEAR) / 100;
             String s = jTextField2.getText().substring(0, 6) + txt + jTextField2.getText().substring(6, 8);
             jTextField2.setText(s);
         }
@@ -525,29 +550,47 @@ public class ToDoGUI extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         int rowSelected;
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        rowSelected = jTable1.getSelectedRow();
+        rowSelected = jTable1.getEditingRow();
         if (rowSelected == -1) {
             //if no Row is selected, then check if there is a row being edited
-            rowSelected = jTable1.getEditingRow();
+            rowSelected = jTable1.getSelectedRows()[jTable1.getSelectedRows().length-1];
+            
         }
+        //if a row was found, then proceed to move it up to the editing section and remove 
+        //it from the table.
         if (rowSelected != -1) {
             SimpleDateFormat f = new SimpleDateFormat("MM/dd/yyyy");
-            String desc = (String) model.getValueAt(rowSelected, 0 );
+            String desc = (String) jTable1.getValueAt(rowSelected, 0);
             //String dateStr = f.format((Calendar)model.getValueAt(1, rowSelected));
-            String date = f.format(((Calendar) model.getValueAt(rowSelected, 1)).getTime());
+            String date = f.format(((Calendar) jTable1.getValueAt(rowSelected, 1)).getTime());
+            if(date.equals("04/25/9999")) date = ""; //if the date is TBD, leave the field blank
             jTextField1.setText(desc);
             jTextField2.setText(date);
-            jComboBox1.setSelectedIndex(getPriorityIndex((String)model.getValueAt(rowSelected,2)));
-
-            model.removeRow(rowSelected);
+            jComboBox1.setSelectedIndex(getPriorityIndex((String) jTable1.getValueAt(rowSelected, 2)));
+            //The sorted table and the tables model use different indicies, 
+            //so we need to conver the sorted index to the one the model recognizes
+            model.removeRow(jTable1.getRowSorter().convertRowIndexToModel(rowSelected));
         }
 
 
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jComboBox1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jComboBox1FocusLost
-        
+
     }//GEN-LAST:event_jComboBox1FocusLost
+    /**
+     * When focus on the table is lost, deselect everything Because it looks
+     * nicer without something highlighted
+     *
+     * @param evt
+     */
+    private void jTable1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTable1FocusLost
+        // TODO add your handling code here:
+        if (!(evt.isTemporary())) {
+            jTable1.clearSelection();
+        }
+
+    }//GEN-LAST:event_jTable1FocusLost
     /**
      * Proper use of the ToDo API requires very low priority to be set to 0,
      * very high to 4, and everything else logically in between.
