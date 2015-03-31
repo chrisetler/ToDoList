@@ -51,7 +51,9 @@ public class ToDoGUI extends javax.swing.JFrame {
             if (value instanceof Calendar) {
                 value = f.format(((Calendar) value).getTime());
                 //allow the display of TBD when the date is not decided
-                if(((String)value).equals("04/25/9999")) value=(Object)"TBD";
+                if (((String) value).equals("04/25/9999")) {
+                    value = (Object) "TBD";
+                }
 
             }
             return super.getTableCellRendererComponent(table, value, isSelected,
@@ -314,7 +316,7 @@ public class ToDoGUI extends javax.swing.JFrame {
      * @return
      */
     private String parseDate(String s) {
-        
+
         char[] strChar = s.toCharArray();
         //get rid of all non-digits
         s = "";
@@ -433,16 +435,19 @@ public class ToDoGUI extends javax.swing.JFrame {
 
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
+            //reset the description field
+            jTextField1.setText("");
         }
         //if no Date is entered, set it to the value for TBD
-        if (dateStr.length() == 0){
+        if (dateStr.length() == 0) {
             //ToDo class parses the strings entered by the GUI for date and priority
             ToDo todo = new ToDo(desc, priorityStr, "04/25/9999");
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
+            //reset the description field
+            jTextField1.setText("");
         }
-        //reset the description field
-        jTextField1.setText("");
+        
         //Save to the temp file
         saveFile("temp");
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -491,7 +496,7 @@ public class ToDoGUI extends javax.swing.JFrame {
                  */
                 System.out.println("Deleting row: " + rowSelected);
 
-                model.removeRow(rowSelected);
+                model.removeRow(jTable1.getRowSorter().convertRowIndexToModel(rowSelected)); //needs to convert to non sorted index so model deletes proper row
             }
             //Save to the temp file
             saveFile("temp");
@@ -553,8 +558,8 @@ public class ToDoGUI extends javax.swing.JFrame {
         rowSelected = jTable1.getEditingRow();
         if (rowSelected == -1) {
             //if no Row is selected, then check if there is a row being edited
-            rowSelected = jTable1.getSelectedRows()[jTable1.getSelectedRows().length-1];
-            
+            rowSelected = jTable1.getSelectedRows()[jTable1.getSelectedRows().length - 1];
+
         }
         //if a row was found, then proceed to move it up to the editing section and remove 
         //it from the table.
@@ -563,7 +568,9 @@ public class ToDoGUI extends javax.swing.JFrame {
             String desc = (String) jTable1.getValueAt(rowSelected, 0);
             //String dateStr = f.format((Calendar)model.getValueAt(1, rowSelected));
             String date = f.format(((Calendar) jTable1.getValueAt(rowSelected, 1)).getTime());
-            if(date.equals("04/25/9999")) date = ""; //if the date is TBD, leave the field blank
+            if (date.equals("04/25/9999")) {
+                date = ""; //if the date is TBD, leave the field blank
+            }
             jTextField1.setText(desc);
             jTextField2.setText(date);
             jComboBox1.setSelectedIndex(getPriorityIndex((String) jTable1.getValueAt(rowSelected, 2)));

@@ -22,5 +22,5 @@ public class ToDoList {
         ToDoGUI gui = new ToDoGUI();
         gui.setVisible(true);
     }
-    
+
 }

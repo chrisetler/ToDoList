@@ -70,13 +70,14 @@ public class ToDoIO {
         objStream.writeObject(null);
         objStream.close();
     }
-    
+
     /**
      * Import the file and store as an array list
+     *
      * @param filename
      * @throws FileNotFoundException
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public void importFile(String filename) throws FileNotFoundException, IOException, ClassNotFoundException {
         FileInputStream fis = new FileInputStream(filename + ".ToDoIO");
@@ -109,18 +110,16 @@ public class ToDoIO {
         objStream.close();
 
     }
-    
-    public Object[] getRow(int i){
-        if (i < rows){
+
+    public Object[] getRow(int i) {
+        if (i < rows) {
             return tableList.get(i);
-        }
-        
-        else {
+        } else {
             return null;
         }
     }
-    
-    public int getRowCount(){
+
+    public int getRowCount() {
         return rows;
     }
 }
