@@ -447,6 +447,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
             //reset the description field
+            System.out.println("Add row");
             jTextField1.setText("");
         }
         //if no Date is entered, set it to the value for TBD
@@ -457,6 +458,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             model.addRow(new Object[]{todo.getDesc(), todo.getDate(), todo.getPriorityStr()});
             //reset the description field
             jTextField1.setText("");
+            System.out.println("aad1");
         }
         
         //Save to the temp file
@@ -536,15 +538,16 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     private void jButton1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyReleased
 
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            System.out.println(2);
-            //do the same thing as if the button is clicked
-            //but also set the focus back to the first text box and select all
-            //for easy input of a lot of data
-            jTextField1.requestFocus();
-            jTextField1.selectAll();
-            this.jButton1ActionPerformed(null);
-        }
+//        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+//            System.out.println(2);
+//            //do the same thing as if the button is clicked
+//            //but also set the focus back to the first text box and select all
+//            //for easy input of a lot of data
+//            //jTextField1.requestFocus();
+//            //jTextField1.selectAll();
+//            this.jButton1ActionPerformed(null);
+//            jTextField1.requestFocus();
+//        }
     }//GEN-LAST:event_jButton1KeyReleased
 
     private void jTable1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseReleased
