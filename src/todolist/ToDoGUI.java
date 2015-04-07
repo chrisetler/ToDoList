@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -36,8 +38,17 @@ public class ToDoGUI extends javax.swing.JFrame {
     public ToDoGUI() throws IOException, FileNotFoundException, ClassNotFoundException {
         initComponents();
         importFile("temp");
-        //jPopupMenu1 = new JPopupMenu();
-        //jPopupMenu1.add("Edit");
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            //jPopupMenu1 = new JPopupMenu();
+            //jPopupMenu1.add("Edit");
+        } catch (InstantiationException ex) {
+            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //Renderer for the date column
@@ -340,7 +351,7 @@ public class ToDoGUI extends javax.swing.JFrame {
         //perform this when the first two digits (Month) are entered
         if (s.length() >= 2) {
             //if the month is greater than 12, get rid of it
-            if (Integer.parseInt(s.substring(0, 2)) > 12) {
+            if (Integer.parseInt(s.substring(0, 2)) > 12 || Integer.parseInt(s.substring(0,2)) == 0 ) {
                 return "";
             }
             s = s.substring(0, 2) + "/" + s.substring(2);
@@ -439,7 +450,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             jTextField1.setText("");
         }
         //if no Date is entered, set it to the value for TBD
-        if (dateStr.length() == 0) {
+        else if (dateStr.length() == 0) {
             //ToDo class parses the strings entered by the GUI for date and priority
             ToDo todo = new ToDo(desc, priorityStr, "04/25/9999");
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -652,7 +663,17 @@ public class ToDoGUI extends javax.swing.JFrame {
             public void run() {
                 Date d = new Date();
                 String s = d.getMonth() + "/" + d.getDate() + "/" + d.getYear();
-
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 try {
                     new ToDoGUI().setVisible(true);
                 } catch (IOException ex) {
