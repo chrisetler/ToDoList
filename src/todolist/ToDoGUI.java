@@ -7,6 +7,7 @@ package todolist;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -19,8 +20,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -37,18 +41,23 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     public ToDoGUI() throws IOException, FileNotFoundException, ClassNotFoundException {
         initComponents();
-        importFile("temp");
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            //jPopupMenu1 = new JPopupMenu();
-            //jPopupMenu1.add("Edit");
-        } catch (InstantiationException ex) {
-            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedLookAndFeelException ex) {
-            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+            importFile("temp");
+        } catch (Exception ex) {
+            //if the temp file wasn't found do nothing 
         }
+        //enable for theming 
+//        try {
+//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+//            //jPopupMenu1 = new JPopupMenu();
+//            //jPopupMenu1.add("Edit");
+//        } catch (InstantiationException ex) {
+//            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (UnsupportedLookAndFeelException ex) {
+//            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     //Renderer for the date column
@@ -87,12 +96,22 @@ public class ToDoGUI extends javax.swing.JFrame {
         popupMenu2 = new java.awt.PopupMenu();
         jPopupMenu1 = new javax.swing.JPopupMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jFileChooser1 = new javax.swing.JFileChooser();
         jTextField1 = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox();
         jButton1 = new javax.swing.JButton();
         jTextField2 = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
 
         popupMenu1.setLabel("popupMenu1");
 
@@ -138,6 +157,9 @@ public class ToDoGUI extends javax.swing.JFrame {
             }
         });
         jTextField2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jTextField2FocusGained(evt);
+            }
             public void focusLost(java.awt.event.FocusEvent evt) {
                 jTextField2FocusLost(evt);
             }
@@ -212,6 +234,49 @@ public class ToDoGUI extends javax.swing.JFrame {
         //set the date column to display mm/dd/yyyy
         jTable1.getColumnModel().getColumn(1).setCellRenderer(dateRenderer);
 
+        jMenu1.setText("File");
+        jMenu1.add(jSeparator1);
+
+        jMenuItem4.setText("Import");
+        jMenuItem4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jMenuItem4MouseReleased(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
+
+        jMenuItem2.setText("Export");
+        jMenuItem2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jMenuItem2MouseReleased(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
+
+        jMenuItem3.setText("Merge");
+        jMenuItem3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jMenuItem3MouseReleased(evt);
+            }
+        });
+        jMenu1.add(jMenuItem3);
+        jMenu1.add(jSeparator2);
+
+        jMenuItem5.setText("Clear Table");
+        jMenuItem5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jMenuItem5MouseReleased(evt);
+            }
+        });
+        jMenu1.add(jMenuItem5);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("About");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -240,7 +305,7 @@ public class ToDoGUI extends javax.swing.JFrame {
                     .addComponent(jButton1)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 289, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 268, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -272,11 +337,54 @@ public class ToDoGUI extends javax.swing.JFrame {
 
         for (int i = 0; i < IO.getRowCount(); i++) {
             Object[] objArray = IO.getRow(i);
+            String s = "Hello";
+            Object o = (Object) s;
+            String q = (String) o;
+            System.out.println(q);
+            System.out.println(o);
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.addRow(new Object[]{(String) objArray[0], (Calendar) objArray[1], (String) objArray[2]});
         }
 
     }
+
+    /**
+     * Use the ToDoIO class to import a list from the specified file.
+     *
+     * @param file
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws ClassNotFoundException
+     */
+    private void importFile(File file) throws IOException, FileNotFoundException, ClassNotFoundException {
+        ToDoIO IO = new ToDoIO(3);
+        IO.importFile(file);
+
+        for (int i = 0; i < IO.getRowCount(); i++) {
+            Object[] objArray = IO.getRow(i);
+            String s = "Hello";
+            Object o = (Object) s;
+            String q = (String) o;
+            System.out.println(q);
+            System.out.println(o);
+            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+            model.addRow(new Object[]{(String) objArray[0], (Calendar) objArray[1], (String) objArray[2]});
+        }
+
+    }
+
+    /**
+     * Clears the table of toDo items
+     */
+    private void clearTable() {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        int count = model.getRowCount();
+        for (int i = 0; i < count; i++) {
+            model.removeRow(jTable1.getRowSorter().convertRowIndexToModel(0));
+        }
+
+    }
+
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
@@ -351,7 +459,7 @@ public class ToDoGUI extends javax.swing.JFrame {
         //perform this when the first two digits (Month) are entered
         if (s.length() >= 2) {
             //if the month is greater than 12, get rid of it
-            if (Integer.parseInt(s.substring(0, 2)) > 12 || Integer.parseInt(s.substring(0,2)) == 0 ) {
+            if (Integer.parseInt(s.substring(0, 2)) > 12 || Integer.parseInt(s.substring(0, 2)) == 0) {
                 return "";
             }
             s = s.substring(0, 2) + "/" + s.substring(2);
@@ -449,8 +557,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             //reset the description field
             System.out.println("Add row");
             jTextField1.setText("");
-        }
-        //if no Date is entered, set it to the value for TBD
+        } //if no Date is entered, set it to the value for TBD
         else if (dateStr.length() == 0) {
             //ToDo class parses the strings entered by the GUI for date and priority
             ToDo todo = new ToDo(desc, priorityStr, "04/25/9999");
@@ -460,7 +567,7 @@ public class ToDoGUI extends javax.swing.JFrame {
             jTextField1.setText("");
             System.out.println("aad1");
         }
-        
+
         //Save to the temp file
         saveFile("temp");
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -507,7 +614,7 @@ public class ToDoGUI extends javax.swing.JFrame {
                 /**
                  * @debug
                  */
-                System.out.println("Deleting row: " + rowSelected);
+                //System.out.println("Deleting row: " + rowSelected);
 
                 model.removeRow(jTable1.getRowSorter().convertRowIndexToModel(rowSelected)); //needs to convert to non sorted index so model deletes proper row
             }
@@ -537,7 +644,8 @@ public class ToDoGUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jButton1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jButton1KeyReleased
-
+        //appearently we don't actually need to define it a second time for when the entere is pressed rather than a click
+        //I could have sworn this wasn't an issue before...
 //        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
 //            System.out.println(2);
 //            //do the same thing as if the button is clicked
@@ -591,6 +699,9 @@ public class ToDoGUI extends javax.swing.JFrame {
             //The sorted table and the tables model use different indicies, 
             //so we need to conver the sorted index to the one the model recognizes
             model.removeRow(jTable1.getRowSorter().convertRowIndexToModel(rowSelected));
+            jTextField1.requestFocus(); //bring the cursor to the description field for editing
+            jTextField1.selectAll(); //select all for easy editing
+
         }
 
 
@@ -612,6 +723,111 @@ public class ToDoGUI extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_jTable1FocusLost
+
+    private void jTextField2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jTextField2FocusGained
+        jTextField2.selectAll();
+    }//GEN-LAST:event_jTextField2FocusGained
+    /**
+     * For the import button. Open a fileChooser to select a file to get the
+     * todo items for (replaces current table)
+     *
+     * @param evt
+     */
+    private void jMenuItem4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem4MouseReleased
+        JFileChooser importFileChooser = new JFileChooser();
+        int returnVal = importFileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File toDoItemsImported = importFileChooser.getSelectedFile();
+            try {
+
+                this.clearTable();
+                importFile(toDoItemsImported);
+            } catch (IOException | ClassNotFoundException e) {
+                try {
+                    importFile("temp");
+                } catch (IOException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                JOptionPane.showMessageDialog(this, "The selected file could not be opened.", "File IO Error", JOptionPane.ERROR_MESSAGE);
+
+            }
+            saveFile("temp");
+
+        }
+    }//GEN-LAST:event_jMenuItem4MouseReleased
+    /**
+     * When the clear button in the file menu is pressed
+     *
+     * @param evt
+     */
+    private void jMenuItem5MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem5MouseReleased
+        String message = "This will clear all items in the table. If you ever want to see them again you must export the table first. Proceed?";
+        String title = "Confirm?";
+        //yes is 0, no is 1
+        int userResponse = JOptionPane.showConfirmDialog(this, message, title, JOptionPane.YES_NO_OPTION);
+        if (userResponse == 0) {
+            this.clearTable();
+            saveFile("temp");
+        }
+    }//GEN-LAST:event_jMenuItem5MouseReleased
+
+    /**
+     * When the export button in the file menu is pressed Export the table to a
+     * new file of type ToDoIO (later support for CSV will be added)
+     *
+     * @param evt
+     */
+    private void jMenuItem2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem2MouseReleased
+        JFileChooser exportFileChooser = new JFileChooser();
+        exportFileChooser.setFileFilter(new FileNameExtensionFilter("ToDoIO File (*.ToDoIO)", "ToDoIO"));
+        exportFileChooser.addChoosableFileFilter(new FileNameExtensionFilter("CSV File (*.csv)", "csv"));
+        int returnVal = exportFileChooser.showSaveDialog(this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            //get the file name
+            String fileName = exportFileChooser.getSelectedFile().toString();
+            //Thanks again to user59600 on StackOverflow for coming with this method of obtaining the extension from the FileFilter. 
+            String ext = exportFileChooser.getFileFilter().toString().replaceFirst(".*extensions=\\[(.*)]]", ".$1").replaceFirst(".*AcceptAllFileFilter.*", "");
+
+            System.out.println(fileName + "\n" + ext);
+
+            if (ext.equals(".csv")) {
+                JOptionPane.showMessageDialog(this, "This feature has not yet been implemented!", "Sorry!", JOptionPane.ERROR_MESSAGE);
+            } else if (ext.equals(".ToDoIO")) {
+                System.out.println(fileName);
+                saveFile(fileName);
+            }
+        }
+    }//GEN-LAST:event_jMenuItem2MouseReleased
+    /**
+     * The merge button
+     * same as the import button but does not clear the table 
+     * @param evt 
+     */
+    private void jMenuItem3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem3MouseReleased
+        JFileChooser importFileChooser = new JFileChooser();
+        int returnVal = importFileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File toDoItemsImported = importFileChooser.getSelectedFile();
+            try {
+                importFile(toDoItemsImported);
+            } catch (IOException | ClassNotFoundException e) {
+                try {
+                    importFile("temp");
+                } catch (IOException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                JOptionPane.showMessageDialog(this, "The selected file could not be opened.", "File IO Error", JOptionPane.ERROR_MESSAGE);
+
+            }
+            saveFile("temp");
+
+        }
+    }//GEN-LAST:event_jMenuItem3MouseReleased
     /**
      * Proper use of the ToDo API requires very low priority to be set to 0,
      * very high to 4, and everything else logically in between.
@@ -693,9 +909,19 @@ public class ToDoGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JFileChooser jFileChooser1;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
