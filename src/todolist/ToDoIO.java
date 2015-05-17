@@ -5,6 +5,7 @@
  */
 package todolist;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -109,6 +110,44 @@ public class ToDoIO {
         }
         objStream.close();
 
+    }
+    /**
+     * Takes in toDoIO files
+     * Files should be made sure to be toDoIO files if this method is to be used
+     * @param file
+     * @throws FileNotFoundException 
+     */
+    public void importFile(File file) throws FileNotFoundException, IOException, ClassNotFoundException {
+       
+        FileInputStream fis = new FileInputStream(file);
+        ObjectInputStream objStream = new ObjectInputStream(fis);
+        //reset rows and table in case this object has already been used. The import will be fresh and won't keep anything
+        rows = 0;
+        int currRow = 0;
+        tableList.clear();
+        int counter = 0;
+        //the first $length objects will be row one, next will be row two, etc
+        //read the fird object
+        Object ObjTemp = objStream.readObject();
+        while (ObjTemp != null) {
+            Object[] objArray = new Object[length];
+            //set first object to the beginning of the array
+            objArray[0] = ObjTemp;
+            if (length > 1) {
+                //add the rest to the array
+                for (int i = 1; i < length; i++) {
+                    objArray[i] = objStream.readObject();
+                }
+            }
+            //add the array to the arrayList
+            tableList.add(objArray);
+            rows++;
+            //get the next object, so it can be checked for null (EOF)
+            ObjTemp = objStream.readObject();
+
+        }
+        objStream.close();
+        
     }
 
     public Object[] getRow(int i) {
