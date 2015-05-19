@@ -31,7 +31,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Chris
  */
 public class ToDoGUI extends javax.swing.JFrame {
-
+    AboutPage about = new AboutPage(); //create the about page
+    
     /**
      * Creates new form ToDoGUI
      *
@@ -41,6 +42,7 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     public ToDoGUI() throws IOException, FileNotFoundException, ClassNotFoundException {
         initComponents();
+        
         try {
             importFile("temp");
         } catch (Exception ex) {
@@ -112,6 +114,7 @@ public class ToDoGUI extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
+        jMenuItem6 = new javax.swing.JMenuItem();
 
         popupMenu1.setLabel("popupMenu1");
 
@@ -273,6 +276,15 @@ public class ToDoGUI extends javax.swing.JFrame {
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("About");
+
+        jMenuItem6.setText("About ToDoList");
+        jMenuItem6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                jMenuItem6MouseReleased(evt);
+            }
+        });
+        jMenu2.add(jMenuItem6);
+
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
@@ -828,6 +840,10 @@ public class ToDoGUI extends javax.swing.JFrame {
 
         }
     }//GEN-LAST:event_jMenuItem3MouseReleased
+
+    private void jMenuItem6MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem6MouseReleased
+        about.setVisible(true);
+    }//GEN-LAST:event_jMenuItem6MouseReleased
     /**
      * Proper use of the ToDo API requires very low priority to be set to 0,
      * very high to 4, and everything else logically in between.
@@ -918,6 +934,7 @@ public class ToDoGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPopupMenu.Separator jSeparator1;

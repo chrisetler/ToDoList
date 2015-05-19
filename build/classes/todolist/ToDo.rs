@@ -1,2 +1,0 @@
-todolist.Priority
-todolist.ToDo

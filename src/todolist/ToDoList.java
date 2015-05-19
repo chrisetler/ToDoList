@@ -21,6 +21,8 @@ public class ToDoList {
         // TODO code application logic here
         ToDoGUI gui = new ToDoGUI();
         gui.setVisible(true);
+        //AboutPage about = new AboutPage();
+        //about.setVisible(true);
     }
 
 }
