@@ -111,14 +111,16 @@ public class ToDoIO {
         objStream.close();
 
     }
+
     /**
-     * Takes in toDoIO files
-     * Files should be made sure to be toDoIO files if this method is to be used
+     * Takes in toDoIO files Files should be made sure to be toDoIO files if
+     * this method is to be used
+     *
      * @param file
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     public void importFile(File file) throws FileNotFoundException, IOException, ClassNotFoundException {
-       
+
         FileInputStream fis = new FileInputStream(file);
         ObjectInputStream objStream = new ObjectInputStream(fis);
         //reset rows and table in case this object has already been used. The import will be fresh and won't keep anything
@@ -147,7 +149,7 @@ public class ToDoIO {
 
         }
         objStream.close();
-        
+
     }
 
     public Object[] getRow(int i) {

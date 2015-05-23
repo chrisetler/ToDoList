@@ -42,8 +42,8 @@ public class AboutPage extends javax.swing.JFrame {
         jTextPane1.setContentType("text/html");
         String text =
         "<html>" +
-        "This is a lightweight todo list editor by Chris Etler, a"
-        + " univerisity student, for fun. It grants the ability to the user"
+        "This is a lightweight todo list editor desgined to help one list"
+        + " there things there are to do. It grants the ability to the user"
         + " to add, edit, and delete events with fields for Description,"
         + " Date, and Completion. One can also enter no date for 'TBD'"
         + " to be displayed."
@@ -63,6 +63,7 @@ public class AboutPage extends javax.swing.JFrame {
         + "<br><br>Email me at cetler123@gmail.com or check out this projects GitHub"
         + " with the link below";
 
+        jTextPane1.setSize(400,600);
         jTextPane1.setText(text);
         jSeparator2 = new javax.swing.JSeparator();
         jLabel3 = new javax.swing.JLabel();
@@ -77,7 +78,7 @@ public class AboutPage extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("A lightweight todo list app");
 
-        jTextPane1.setFocusable(false);
+        jTextPane1.setEditable(false);
         jScrollPane1.setViewportView(jTextPane1);
 
         jSeparator2.setMinimumSize(new java.awt.Dimension(50, 5));
