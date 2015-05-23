@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -31,8 +32,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author Chris
  */
 public class ToDoGUI extends javax.swing.JFrame {
+
     AboutPage about = new AboutPage(); //create the about page
-    
+    SettingsIO settings = new SettingsIO();
     /**
      * Creates new form ToDoGUI
      *
@@ -42,12 +44,20 @@ public class ToDoGUI extends javax.swing.JFrame {
      */
     public ToDoGUI() throws IOException, FileNotFoundException, ClassNotFoundException {
         initComponents();
-        
+
         try {
             importFile("temp");
         } catch (Exception ex) {
-            //if the temp file wasn't found do nothing 
+            System.out.println("No previous todolist");
         }
+        
+        try {
+            settings.importFile("settings");
+        } catch (Exception ex) {
+            System.out.println("No settings or unable to import. ");
+            ex.printStackTrace();
+        }
+
         //enable for theming 
 //        try {
 //            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -603,7 +613,13 @@ public class ToDoGUI extends javax.swing.JFrame {
             Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    private void saveSettings(String fname) {
+        try {
+            settings.exportFile(fname);
+        } catch (IOException ex) {
+            Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * Runs when a key is pressed over the table. Delete the selected Row if the
      * 'delete' key is pressed.
@@ -746,27 +762,42 @@ public class ToDoGUI extends javax.swing.JFrame {
      * @param evt
      */
     private void jMenuItem4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem4MouseReleased
-        JFileChooser importFileChooser = new JFileChooser();
-        int returnVal = importFileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File toDoItemsImported = importFileChooser.getSelectedFile();
-            try {
-
-                this.clearTable();
-                importFile(toDoItemsImported);
-            } catch (IOException | ClassNotFoundException e) {
+        boolean showWarning = (settings.getSetting("ShowWarningOnImport")==1)? true:false;
+        int okCancel = 0;
+        if(showWarning) {
+            JCheckBox checkbox = new JCheckBox("Do not show this message again.");
+            String message = "Note: importing will cause the current list to be lost. Are you sure?"
+                    +" If you want to add the new list to the current list, you can use the merge option instead.";
+            Object[] params = {message, checkbox};
+            okCancel = JOptionPane.showConfirmDialog(this, params, "Disconnect Products", JOptionPane.OK_CANCEL_OPTION);
+            boolean dontShow = checkbox.isSelected();
+            settings.setSetting("ShowWarningOnImport",!dontShow);
+            this.saveSettings("settings");
+            
+        }
+        if(okCancel == 0){
+            JFileChooser importFileChooser = new JFileChooser();
+            int returnVal = importFileChooser.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File toDoItemsImported = importFileChooser.getSelectedFile();
                 try {
-                    importFile("temp");
-                } catch (IOException ex) {
-                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+
+                    this.clearTable();
+                    importFile(toDoItemsImported);
+                } catch (IOException | ClassNotFoundException e) {
+                    try {
+                        importFile("temp");
+                    } catch (IOException ex) {
+                        Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(ToDoGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    JOptionPane.showMessageDialog(this, "The selected file could not be opened.", "File IO Error", JOptionPane.ERROR_MESSAGE);
+
                 }
-                JOptionPane.showMessageDialog(this, "The selected file could not be opened.", "File IO Error", JOptionPane.ERROR_MESSAGE);
+                saveFile("temp");
 
             }
-            saveFile("temp");
-
         }
     }//GEN-LAST:event_jMenuItem4MouseReleased
     /**
@@ -814,9 +845,9 @@ public class ToDoGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jMenuItem2MouseReleased
     /**
-     * The merge button
-     * same as the import button but does not clear the table 
-     * @param evt 
+     * The merge button same as the import button but does not clear the table
+     *
+     * @param evt
      */
     private void jMenuItem3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem3MouseReleased
         JFileChooser importFileChooser = new JFileChooser();
